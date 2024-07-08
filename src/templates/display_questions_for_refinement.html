@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% block title%} Question Refinement - Part 2 {% endblock %}
+
+{% block headerStyle %}
+    <style> 
+    .container {
+        margin-top: 50px;
+    }
+    .dimension{
+        font-weight: bold;
+        color: #00802F;
+    }
+    .question-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    }
+    .button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    }
+    
+    .modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto; /* 15% from the top and centered */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 40%; /* Could be more or less, depending on screen size */
+        border-radius: 10px; /* Rounded corners */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .modal-content textarea {
+    width: 80%;
+    height: 100px;
+    font-size: 20px;
+    }   
+
+    .modal-content input[type="submit"] {
+    margin-top: -30px;
+    }
+
+    /* Style the dropdown container */
+    select {
+        display: block;
+        border: 1px solid #00802F;
+        font-size: 14px;
+        line-height: 1.3;
+        padding: 0.6em 1.4em 0.5em 0.8em;
+        max-width: 100%;
+        box-sizing: border-box;
+        margin: 0;
+        box-shadow: 0 1px 0 1px rgba(0,0,0,.04);
+        border-radius: 0.5em;
+        -moz-appearance: none;
+        -webkit-appearance: none;
+        appearance: none;
+        background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2300802F%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E');
+        background-repeat: no-repeat, repeat;
+        background-position: right .7em top 50%, 0 0;
+        background-size: .65em auto, 100%;
+    }
+    .dropdown-container {
+    display: flex;
+    justify-content: space-between;
+    }
+
+    .dropdown {
+        flex: 1;
+    }
+    .btn-change {
+    font-size: 12px;  /* Smaller font size */
+    padding: 5px;  /* Less padding */
+    text-align: center;  /* Center the text */
+    }
+
+    </style>
+{% endblock %}
+
+{% block content %} 
+    <div class="container mt-5">
+        <h1>Question Refinement</h1>
+        <hr>
+        After you specified your preliminary questions or requirements, you should now classify and if required, refine them.
+        It is for example advisable to split questions into smaller tasks, as soon as you notice that they contain several aspects that could also be analyzed indepedently.
+        One question should only ask for one aspect. Therefore you should reduce conjunctions like "and" or "or" to a minimum.
+        <br>
+        <p>Following, we ask you to categorize your questions along the 6 dimensions of the PMQF classification schema. Save the selection of each question to be able to export it later.</p>
+        <p> Below, you find the descriptions of the categories, in case required.</p>
+        <br>
+        <hr>        
+        <div class="container">
+            {% for question in questions %}
+                <div class="question-container">
+                    <p><b id="question{{ loop.index }}">{{ question }}</b></p>
+
+                    <div class="button-container">
+                    
+                        <button type="button" onclick="openModal({{ loop.index }})" class="btn btn-change">Edit question</button>
+                        <div id="modal{{ loop.index }}" class="modal">
+                            <div class="modal-content">
+                                <span class="close" onclick="closeModal({{ loop.index }})">&times;</span>
+                                <form action="/update_question_from_refinement" method="post">
+                                    <input type="hidden" name="index" value="{{ loop.index }}">
+                                    <textarea name="question" id="questionText{{ loop.index }}">{{ question }}</textarea>
+                                    <input type="submit" value="Update" class="btn btn-success">
+                                </form>
+                            </div>
+                        </div>
+                    
+
+                        <button type="button" onclick="openModal('add')" class="btn btn-change">Add Question</button>
+                        <div id="modaladd" class="modal">
+                            <div class="modal-content">
+                                <span class="close" onclick="closeModal('add')">&times;</span>
+                                <form action="/add_question_from_refinement" method="post">
+                                    <input type="hidden" name="index" value="{{ loop.index }}">
+                                    <textarea name="add_question" id="questionTextAdd"></textarea>
+                                    <input type="submit" value="Add">
+                                </form>
+                            </div>
+                        </div>
+                    </div>    
+                </div> 
+                <br>
+                <p>Categorization:</p>                
+                <form action="/question_refinement_assessment" method="POST" id="categorization">
+                    <div class="dropdown-container">
+                        {% for dimension in taxonomy %}
+                            <div class="dropdown">
+                                <label>{{ dimension.text }}</label>
+                                <select name="{{question}}_{{dimension.text}}">
+                                    {% for node in dimension.nodes %}
+                                        {% if questions_for_categorization[question][dimension.text] == node.text %}
+                                            <option value="{{ node.text }}" selected>{{ node.text }}</option>
+                                        {% else %}
+                                            <option value="{{ node.text }}">{{ node.text }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        {% endfor %}                    
+                    </div>
+                   <br> 
+                   <div class="button-container">
+                        <button type="submit" class="btn btn-change">Save categorization</button>
+                    </div>
+                </form>
+                <br> <br>
+                <hr>
+                <br> <br>
+            {% endfor %}
+        </div>        
+        <a href="/export_refinedQuestions" class="btn btn-primary">Export categorized questions</a>
+        <br>
+        <hr>
+        <br>
+        <h1> Dimensions and Categories </h1>
+        <hr>
+
+        {% for dimension in taxonomy %}
+                <h2>{{ dimension.text }}</h2>
+                <p>{{ dimension.description }}</p>
+                <ul>
+                    {% for node in dimension.nodes %}
+                        <li><div class = "dimension">{{ node.text }}</div>{{ node.description }}</li>
+                    {% endfor %}
+                </ul>
+                <br>
+                <hr>
+        {% endfor %}
+    
+    
+    </div>
+                                   
+
+    <script>
+        function openModal(index) {
+            document.getElementById('modal' + index).style.display = 'block';
+        }
+        
+        function closeModal(index) {
+            document.getElementById('modal' + index).style.display = 'none';
+        }
+        </script>
+{% endblock %}

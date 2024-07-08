@@ -1,0 +1,353 @@
+{% extends "base.html" %}
+
+{%block title%} Question Design {%endblock%}
+
+{% block headerStyle %}
+<style>    
+    .btn.active, .someParentClass .btn.active {
+        background-color: #B6F7D1 !important; /* Adjust the color as needed */
+        color: #00802F !important;        
+        border-color: #00802F !important;
+    }
+        .btn-outline-primary.active {
+            background-color: #23E874;
+            color: white;
+        }
+        .container {
+            text-align: center;
+        }
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        .btn-outline-primary {
+            border-color: #00802F;
+        }
+        .btn-outline-primary:hover {
+            background-color: #23E874;
+            border-color: #00802F;
+        }
+        .btn-outline-primary:not(:disabled):not(:disabled):active{
+            background-color: #23E874;
+            color: white;
+            border-color: #00802F;
+            box-shadow: none;
+        }
+        }
+        input[type="checkbox"]:checked + span {
+        background-color: #00802F;
+        }
+        .describe-subcategory {
+            display: flex;
+            flex-direction: row;
+            margin-right: 10px;
+        }
+        .cat_subcategories_wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-center;
+            border-color: #00802F;
+        }
+        .txt-note{
+            font-size: 1em;
+            color: black;
+            display: none;            
+        }
+
+        input[type="checkbox"]:hover ~ .txt-note {
+            display: block; /* Show when checkbox is hovered */
+        }
+        .txt-note_static{
+            font-size: 0.8em;
+            color: black;         
+        }        
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+    <h1>PMQF - Question Design</h1>
+    <hr>
+        <p>Below, you are confronted with a list of categories and questions. Reflect on the questions and select the 
+            options that seem most relevant to you. <br> <br>
+            You can select multiple categories in case they are equally relevant to you. <br> <br>
+            You do not have to take a selection for each dimension. Feel free to skip dimensions, in case they are not relevant given your current situation.
+            There might be questions that you cannot answer yet or for which you do not want to take a selection. 
+        </p>
+    <hr>
+    <br>
+    <form method="POST" action="/question_design_results">
+        <div class="container">
+            <h2>1. Use Case</h2>
+            <p> Process mining analyses serves different goals and can therefore be differentiated according to the use case that you aim to realize.
+                <b> Which of the following process mining use cases best aligns with your business interest?</b> Select one, multiple, or none.
+            </p>
+            <div class="btn-group" >
+                <label class="btn btn-outline-primary">
+                    <input type="checkbox" name="UseCaseDimension" value="Transparency" {% if "Transparency" in previouslySelectedButtons %} checked {% endif %}> Transparency 
+                    <p class="txt-note">
+                        Gaining transparency or democratizing the process data.    
+                    </p>
+                </label>
+                <label class="btn btn-outline-primary">
+                    <input type="checkbox" name="UseCaseDimension" value="Performance" {% if "Performance" in previouslySelectedButtons %} checked {% endif %}> Performance
+                    <p class="txt-note">
+                        Assessing or improving any performance aspect of your process.    
+                    </p>
+                </label>
+                <label class="btn btn-outline-primary">
+                    <input type="checkbox" name="UseCaseDimension" value="Compliance" {% if "Compliance" in previouslySelectedButtons %} checked {% endif %} > Compliance 
+                    <p class="txt-note">
+                        Assessing or improving process compliance with legal or internal regulations (e.g., to-be models, business rules).
+                    </p>     
+                </label>
+                <label class="btn btn-outline-primary">
+                    <input type="checkbox" name="UseCaseDimension" value="Automation" {% if "Automation" in previouslySelectedButtons %} checked {% endif %}> Automation 
+                    <p class="txt-note">
+                        Assessing or improving the automation level of the process.
+                </label>
+            </div>
+        </div>
+        <div class="container">
+            <hr>
+            <br>
+            <h2>2. Perspective</h2>
+            <p>Processes can be analyzed from different perspectives as event logs are typically enriched with information such as resources, costs, or other attributes.
+            <b> Are there specific perspectives that you are interested in?</b> Select one, multiple, or none. 
+            </p>
+            <div class="btn-group" >
+                <label class="btn btn-outline-primary">
+                    <input type="checkbox" name="PerspectiveDimension" value="Control-Flow" {% if "Control-Flow" in previouslySelectedButtons %} checked {% endif %}> Control-Flow
+                    <p class="txt-note">
+                        Occurence or order of events, traces, and their execution.
+                    </p>
+                </label>
+                <label class="btn btn-outline-primary">
+                    <input type="checkbox" name="PerspectiveDimension" value="Time" {% if "Time" in previouslySelectedButtons %} checked {% endif %}> Time
+                    <p class="txt-note">
+                        Time-related aspects of the process, such as duration, waiting times, and time between events. 
+                    </p>
+                </label>
+                <label class="btn btn-outline-primary">
+                    <input type="checkbox" name="PerspectiveDimension" value="Data" {% if "Data" in previouslySelectedButtons %} checked {% endif %}> Data
+                    <p class="txt-note">
+                        Data attributes (e.g., their value or distributions) and their interrelations. 
+                    </p>
+                </label>
+                <label class="btn btn-outline-primary">
+                    <input type="checkbox" name="PerspectiveDimension" value="Resources" {% if "Resources" in previouslySelectedButtons %} checked {% endif %}> Resources
+                    <p class="txt-note">
+                        Resources involved in the process (e.g., actors, organizational units), their attributes (e.g., role), and aspects such as their utilization, collaboration, or allocation.
+                    </p>
+
+                </label>
+                <label class="btn btn-outline-primary">
+                    <input type="checkbox" name="PerspectiveDimension" value="Costs" {% if "Costs" in previouslySelectedButtons %} checked {% endif %}> Costs
+                    <p class="txt-note">
+                        Financial implications of the process execution.
+                    </p>
+                </label>
+            </div>
+        </div>
+        <div class="container">
+            <hr>
+            <br>
+            <h2>3. Primary Goal</h2>
+            <p>Depending on how a question is formulated (e.g., which question word is used) the answer you can expect may vary. 
+                <b>Which activity best describes the type of response you are looking for?</b> Select one, multiple, or none. </p>                
+            <div class="btn-group" >                    
+                <div class = "cat_subcategories_wrapper">
+                    <label class="btn btn-outline-primary">
+                        <input type="checkbox" name="PrimaryGoalDimension" value="Describe", id="Describe" {% if "Describe: Quantitative" in previouslySelectedButtons or  "Describe: Qualitative" in previouslySelectedButtons%} checked {% endif %}> Describe
+                        <p class="txt-note">
+                            Retrieve a general description of a phenomenon. 
+                        </p>
+                    </label>
+                    <div id="describe-subcategories" style="display: none; flex-direction: row;">
+                        <label class="btn btn-outline-primary">
+                        <input type="checkbox" name="describe-subcategory" value="Describe: Quantitative" {% if "Describe: Quantitative" in previouslySelectedButtons %} checked {% endif %}> Describe: Quantitative
+                        <p class="txt-note_static">
+                            Quantitative description (e.g., numbers, statistics, etc.)</p>
+                        </label>
+                        <label class="btn btn-outline-primary">
+                            <input type="checkbox" name="describe-subcategory" value="Describe: Qualitative" {% if "Describe: Qualitative" in previouslySelectedButtons %} checked {% endif %}> Describe: Qualitative
+                        <p class="txt-note_static">
+                            Qualitative description (e.g., text, visual representation, etc)    
+                        </p>
+                        </label>
+                    </div>
+                </div>
+                <label class="btn btn-outline-primary">
+                    <input type="checkbox" name="PrimaryGoalDimension" value="Confirm" {% if "Confirm" in previouslySelectedButtons %} checked {% endif %}> Confirm
+                    <p class="txt-note">
+                        Confirm a hypothesis that already exists.
+                    </p>
+                </label>
+                <label class="btn btn-outline-primary">
+                    <input type="checkbox" name="PrimaryGoalDimension" value="Explain" {% if "Explain" in previouslySelectedButtons %} checked {% endif %}> Explain
+                    <p class="txt-note">
+                        Explain a phenomena.
+                    </p>
+                </label>
+                <div class="cat_subcategories_wrapper">
+                    <label class="btn btn-outline-primary">
+                        <input type="checkbox" name="PrimaryGoalDimension" value="Predict" id="Predict" {% if "Predict: What-If" in previouslySelectedButtons or "Predict: Process Execution" in previouslySelectedButtons %} checked {% endif %}> Predict
+                        <p class="txt-note">
+                            Forcast future happenings.
+                        </p>
+                    </label>
+                    <div id="predict-subcategories" style="display: none; flex-direction: row;">
+                        <label class="btn btn-outline-primary">
+                            <input type="checkbox" name="predict-subcategory" value="Predict: What-If" {% if "Predict: What-If" in previouslySelectedButtons %} checked {% endif %}> Predict: What-If
+                            <p class="txt-note_static">
+                                Forecasting the effects of hypothetical scenarios on the process execution (i.e., implications of potential process changes). 
+                            </p>
+                        </label>
+                        <label class="btn btn-outline-primary">
+                            <input type="checkbox" name="predict-subcategory" value="Predict: Process Execution" {% if "Predict: Process Execution" in previouslySelectedButtons %} checked {% endif %}> Predict: Process Execution
+                        <p class="txt-note_static">
+                            Forecasting the process execution (e.g., the next event, the end of the process, the duration of the process, etc.).
+                        </p>    
+                        </label>
+                    </div>
+                </div>
+                <label class="btn btn-outline-primary">
+                    <input type="checkbox" name="PrimaryGoalDimension" value="Prescribe" {% if "Prescribe" in previouslySelectedButtons %} checked {% endif %}> Prescribe
+                    <p class="txt-note">
+                        Provide guidance for process changes, i.e., answers are expected to prescribe how a process should be changed.
+                </label>
+            </div>
+        </div>
+        <div class="container">
+            <hr>
+            <br>
+            <h2>4. Cognitive Step</h2>
+            <p> <b> Do you already know whether information needs to be identified, compared (with each other or with an external benchmark) or summarized?</b>
+                The answer to this question might depend on the cardinality (“magnitude”) of the data elements you expect as output. Are you interested in the list of outputs (e.g., a list of vendors), a comparison of outputs (e.g., a ranking of vendors), or a summary of the output (e.g., count of all vendors involved)? Select one, multiple, or none.
+            </p>
+            <div class="btn-group" >
+                <label class="btn btn-outline-primary">
+                    <input type="checkbox" name="CognitiveStepDimension" value="Identify" {% if "Identify" in previouslySelectedButtons %} checked {% endif %}> Identify
+                    <p class="txt-note">
+                        Requires determining a single or multiple independent entities or phenomenas from the event log. Those might either be identified based on information in the data (e.g., an attribute or activity name) or based on an assessment or conjecture (e.g., what is interesting, how could the process be improved).
+                    </p> 
+                </label>
+                <label class="btn btn-outline-primary">
+                    <input type="checkbox" name="CognitiveStepDimension" value="Compare" {% if "Compare" in previouslySelectedButtons %} checked {% endif %}> Compare
+                    <p class="txt-note">
+                        Requires comparing two or more subsets of (previously identified) elements to provide an answer. This includes the comparison of subsets of the data, the comparison of the data with an external benchmark, or the comparison of frequencies to, e.g., identify the most common process variant.
+                    </p>
+                </label>
+                <label class="btn btn-outline-primary">
+                    <input type="checkbox" name="CognitiveStepDimension" value="Summarize" {% if "Summarize" in previouslySelectedButtons %} checked {% endif %}> Summarize
+                    <p class="txt-note">
+                        Requires aggregating information from several data elements or process aspects, resulting in a comprehensive overview.
+                    </p>
+            </div>
+        </div>
+
+        <div class="container">
+            <hr>
+            <br>
+            <h2>5. Data Level</h2>
+            <p>The data on which a process analysis is based is usually provided in the form of event logs (also known as activity tables). In this context, questions could aim at the entire data set, as well as at the analysis of subsets of traces, or subsets of events. 
+                <b>Which of the following groups of data elements are you interested in?</b> Select one, multiple, or none.
+            </p>
+            <div class="btn-group" >
+                <label class="btn btn-outline-primary">
+                    <input type="checkbox" name="DataLevelDimension" value="Log" {% if "Log" in previouslySelectedButtons %} checked {% endif %}> Log
+                    <p class="txt-note">
+                        The data as a whole.
+                    </p>
+                </label>
+                <label class="btn btn-outline-primary">
+                    <input type="checkbox" name="DataLevelDimension" value="Trace" {% if "Trace" in previouslySelectedButtons %} checked {% endif %}> Trace
+                    <p class="txt-note">
+                        (A set of) specific traces (cases, instances) that satisfy a property,e.g., have a specific value for a data attribute or include a specific pattern. 
+                        Traces might need to be considered in full (start-end) or as subsequences (Activity X to Activity Y).
+                    </p>
+                </label>
+                <label class="btn btn-outline-primary">
+                    <input type="checkbox" name="DataLevelDimension" value="Event" {% if "Event" in previouslySelectedButtons %} checked {% endif %}> Event
+                    <p class="txt-note">
+                        (A set of) events or event attributes. 
+                    </p>
+                </label>
+            </div>
+        </div>
+        <br>
+        <br>
+        <button type="submit" class="submit-btn">Submit</button> 
+        <br>
+        <br>
+    </div>
+   
+        
+    </form>
+    </div>
+
+    <script>
+        $('.btn').click(function() {
+            //$(this).toggleClass('active');
+            var checkbox = $(this).find('input[type="checkbox"]');
+            checkbox.prop("checked", !checkbox.prop("checked"));
+            $(this).toggleClass('active', checkbox.prop("checked"));
+        });
+
+        // Check each checkbox and if checked, add 'active' class to its parent button
+        $('input[type="checkbox"]').each(function() {
+            if (this.checked) {
+                $(this).closest('.btn').toggleClass('active');
+            }
+        });
+
+        document.getElementById('Describe').addEventListener('change', function() {
+            var subcategories = document.getElementById('describe-subcategories');
+            if (this.checked) {
+                // If the "Describe" checkbox is checked, show the subcategories
+                subcategories.style.display = 'block';
+            } else {
+                // If the "Describe" checkbox is unchecked, hide the subcategories and uncheck them
+                subcategories.style.display = 'none';
+                var subcategoryCheckboxes = subcategories.getElementsByTagName('input');
+                for (var i = 0; i < subcategoryCheckboxes.length; i++) {
+                    subcategoryCheckboxes[i].checked = false;
+                }
+            }
+        });
+        document.getElementById('Predict').addEventListener('change', function() {
+            var subcategories = document.getElementById('predict-subcategories');
+            if (this.checked) {
+                // If the "Describe" checkbox is checked, show the subcategories
+                subcategories.style.display = 'block';
+            } else {
+                // If the "Describe" checkbox is unchecked, hide the subcategories and uncheck them
+                subcategories.style.display = 'none';
+                var subcategoryCheckboxes = subcategories.getElementsByTagName('input');
+                for (var i = 0; i < subcategoryCheckboxes.length; i++) {
+                    subcategoryCheckboxes[i].checked = false;
+                }
+            }
+        });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    
+    <script>
+    $(document).ready(function() {
+        $('input[type="checkbox"]').change(function() {
+            if ($(this).is(':checked')) {
+                $(this).parent().addClass('checked');
+            } else {
+                $(this).parent().removeClass('checked');
+            }
+        });
+    });
+    </script>
+
+    <style>
+    .checked {
+        background-color: #B6F7D1;
+    }
+    </style>
+{% endblock %}

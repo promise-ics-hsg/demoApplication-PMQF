@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Results{% endblock %}
+
+{% block content %}    
+    <style>
+        .submit-btn-2 {
+        background-color: #00802F;
+        border-color: #0A5F2D;            
+        color: white;
+        margin-right: 10px;  /* Adjust as needed */
+        margin-top: 10px;
+    }
+    </style>
+
+    <div class="container mt-5">
+        <h1>Results - Selected Questions</h1>
+        <hr>
+        <p>Below you can find the overview of questions you selected so far. The heatmap indicates the categories that your questions cover. 
+            Below, you can inspect your questions in detail and reformulate them according to your domain.
+
+            <br> <br>
+            Number of questions selected: {{ num_selected_questions }}  
+        </p>
+        <hr>
+        <h2>Question Analytics</h2>
+        <img src="{{ url_for('static', filename=heatpmap_path) }}" alt="Heatmap", style="width: 100%;">
+        <hr>   
+        <h2>Selected Questions</h2>  
+        <form action="/handle_bulk_reformulation" method="post">
+            <table id="selectedQuestions">
+                {% for item in QuestionsSelected %}                
+                <tr>
+                    <td>
+                        <div class="question">{{ item['Question'] }}</div>
+                        <div class="additionalInfo">Source: {{ item['Source'] }}; Context: {{ item['Context'] }}; Data Level: {{ item['Data Level'] }}</div>
+                        <!-- Input for the reformulation -->
+                        <input type="text" name="reformulation[]" style="width: 95%;" placeholder="Reformulation (if required)">
+                        <input type="hidden" name="question_id[]" value="{{ item['unique_id'] }}">
+                        <br> <br>
+                        <!-- Delete button for each question -->
+                        <button type="submit" name="delete_question" value="{{ item['unique_id'] }}" class="submit-btn">Remove Question</button>
+                        <br>
+                        <hr>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+            <br>
+            <br>
+            <button type="submit" class="submit-btn">Submit All Reformulations</button>
+        </form>
+        <br>
+        <br>
+        <button onclick="location.href='/question_design'" type="button" class="btn btn-success">Back to category selection</button>
+        <a href="/export" class="btn btn-primary">Export to CSV</a>
+        <br> <br>
+    </div>
+    
+
+{% endblock %}

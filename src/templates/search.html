@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %} ProMiSE Question Suggestion tool {% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1>Keyword Search</h1>
+        <form method="POST">
+            <div class="form-group">
+                <label for="keyword">Keyword</label>
+                <input type="text" class="form-control" id="keyword" name="keyword" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Search</button>
+            <button onclick="location.href='/search'" class="btn btn-secondary">Reset Keyword Search</button>
+        </form>        
+        
+        <p>KeyWord Search: 
+        {% for s in synonyms %}
+            <span style="margin-right: 5px; color: black; font-style: bold;"> {{ s }}; </span>
+        {% endfor %}</p>
+    
+        <!-- <p> Number of results: {{ number_of_results }} </p> !-->
+        
+
+        {% if data %}
+        <table class="table" id="data">
+            <thead>
+                <tr>
+                    <th>Question</th>
+                    {% for dimension in taxonomy %}
+                        <th>{{ dimension.text }} <select id="{{dimension.text}}Filter" style="width: 80px;"></select></th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data %}
+                <tr {% for dimension in taxonomy %}
+                    {{dimension.text}}="{{ row[dimension.text] }}"
+                    {% endfor %}>
+                    
+                    <td>{{ row.Question }}</td>
+
+                    {% for dimension in taxonomy %}
+                        <td>{{ row[dimension.text] }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+
+    <script>
+        
+        var data = {{ data|tojson|safe }};
+        var taxonomy = {{ taxonomy|tojson|safe }};
+
+        taxonomy.forEach(function(dimension) {
+            var dimensionValues = new Set(data.map(row => row[dimension.text]));
+            populateDropdown(dimension.text + 'Filter', dimensionValues, 'All');
+        });
+
+        function populateDropdown(dropdownId, values, defaultOptionText) {
+            var dropdown = document.getElementById(dropdownId);
+            var defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.text = defaultOptionText;
+            dropdown.appendChild(defaultOption);
+
+            values.forEach(value => {
+                // Check if value is not NaN before adding it -> if so, ignore
+                if (!isNaN(value) || typeof value === 'string') {            
+                    var option = document.createElement('option');
+                    option.value = value;
+                    option.text = value;
+                    dropdown.appendChild(option);
+                }
+                });
+        }
+
+        var filterElements = taxonomy.map(dimension => document.getElementById(dimension.text + 'Filter'));
+
+        filterElements.forEach(function(element) {
+            if (element) {
+                element.addEventListener('change', filterResults);
+            }
+        });
+
+        function filterResults() {
+
+            var rows = document.getElementById('data').getElementsByTagName('tr');
+
+            for (var i = 1; i < rows.length; i++) {
+                var displayRow = true;
+                taxonomy.forEach(function(dimension) {
+                    var filterValue = document.getElementById(dimension.text + 'Filter').value;
+                    // required processing, as dimension names might contain spaces
+                    var dimensionParts = dimension.text.split(/\s+/g);
+                    var lastPart = dimensionParts[dimensionParts.length - 1];
+
+                    var rowValue = rows[i].getAttribute(lastPart);
+                    if (filterValue !== '' && rowValue !== filterValue) {
+                        displayRow = false;
+                    }
+                });
+                rows[i].style.display = displayRow ? '' : 'none';
+            }
+        }
+    </script>
+
+{% endblock %}
+    

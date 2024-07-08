@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title%} Question Design Tool {% endblock %}
+
+{% block content %} 
+
+    <div class="container mt-5">
+        <h1>Welcome to PMQF: The Process Mining Question Forge</h1>
+        <hr>
+        <p>
+        Whether you're diving into process analysis or seeking clarity on intricate questions, 
+        this tool aims to inspire and guide you. It is developed targeting process mining analysts and process owners 
+        as part of a research project. It brings an intuitive approach to inspire question design and question
+        refinement and thus helps to streamline your scoping and requirements engineering efforts to lay the
+        groundwork for successful project outcomes. <br>
+        <!-- It builds on a large collection of process mining analysis questions, both taken from practice and academia.    -->     
+        </p>
+        <hr>
+        <h2>Background</h2>
+        <p> The currently deployed version of PMQF builds on top of a large collection of process mining analysis questions that are gathered from practical projects, case studies,
+        and tool vendors. Based on these questions, we have developed a categorization schema that allows to access the question collection in a structured way and supports different usage scenarios. 
+        However, PMQF can be extended with any question collection and categorization schema. </p>       
+            <ul> 
+                <li>Keyword Search: This feature allows you to search for questions based on keywords.</li>
+                <li>Guided Question Design: This feature guides you through a set of selections and helps you to design the most relevant questions for your project.</li>
+                <li>Question Refinement: This feature allows you to reflect upon your (existing) questions based on on the classification schema and ensures a shared understanding between all project stakeholders. We advice to use this feature with your complete project team. </li>
+            </ul>
+
+        However, before continuing with one of these options, you are free to familiarze yourself with the classification schema and some examples to better understand it's dimensions.     
+        </p>
+        <button onclick="location.href='/view_categorization'" type="button" class="btn btn-success">Inspect Classification Schema and Examples</button>
+
+        <hr>      
+        
+        <p>
+        In case you are starting your process mining project, we recommend you to start with the guided question design feature.
+        In case you already have a specific use case in mind that you can nail down based on a keyword, you can also try using the 
+        keyword search. 
+        If you already have a concrete question in mind and would like to refine it or ensure a common understanding between you and your project team, you can use the question refinement feature.</p>
+        <hr>
+        <p> How would you like to continue?</p>
+        <button onclick="location.href='/search'" type="button" class="btn btn-success">Keyword Search</button>
+        <button onclick="location.href='/question_design'" type="button" class="btn btn-success">Question Design</button>
+        <button onclick="location.href='/question_refinement'" type="button" class="btn btn-success">Question Refinement</button>
+    </div>
+{% endblock %}

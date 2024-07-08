@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+
+{% block title%} Results {% endblock %}
+
+{% block content %}
+
+    <div class="container mt-5">
+        <h1>Questions</h1>
+        <hr>
+        The following list of questions matches your selection and can provide some inspiration for your own question design. It consists of questions that are domain-specific and domain-agnostic. 
+        Domain-agnostic questions might be easier to be adopted to your own use cases, while domain-specific questions are questions that have been raised for very specific processes.
+        <br>
+        From the list below, select those questions that appear relevant to you and save them for the next refinement step. 
+        <hr>  
+
+        <h5>Selected categories:</h5> <br>
+        {% if filtered_dict %}
+            <ul>
+                {% for key, values in filtered_dict.items() %}
+                    <li>
+                        {{ key }}: {{ values | join(", and ") }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No categories selected.</p>
+        {% endif %}
+        <!--
+        <p>Filtered for dimensions: 
+            {% for item in filtered_dimensions %}
+                <span style="background-color: green; margin-right: 5px; color: white; font-style: bold;">{{ item }}</span>
+            {% endfor %} 
+        </p>
+        <p>Filtered for categories: 
+            {% for item in filtered_keywords %}
+                <span style="background-color: green; margin-right: 5px; color: white; font-style: bold;">{{ item }}</span>
+            {% endfor %}
+        </p>
+        -->
+        <p>Number of questions matching the selection: {{ num_questions }}</p>
+        <hr>
+        <form method="POST" action="/question_design_results" id="QuestionSelectionForm">
+            <div class="row">
+                <div class="col-md-8">
+                    <!-- This code block generates the table of resulting questions -->    
+                    <table id="data">
+                        {% for item in data %}
+                        <tr Context="{{ item['Context'] }}" UseCase="{{ item['Use Case'] }}" Perspective="{{ item['Perspective'] }}" PrimaryGoal="{{ item['Primary Goal'] }}" CognitiveStep="{{ item['Cognitive Step'] }}" DataLevel ="{{ item['Data Level'] }}" ID="{{ item['unique_id'] }}" >
+                            <td>
+                                <input type ="checkbox" class = "itemCheckbox" value="{{ item['unique_id'] }}" name="questionCheckbox"> </input>
+                                <div class="question">{{ item['Question'] }}</div>      
+                                <div class="additionalInfo">Source: {{ item['Source'] }} </div>
+                                <div class="additionalInfo">Context: {{ item['Context'] }}; Use Case: {{ item['Use Case']}}; Perspective: {{ item['Perspective'] }}; Primary Goal: {{ item['Primary Goal'] }}; Cognitive Step: {{ item['Cognitive Step'] }};  Data Level: {{ item['Data Level'] }} </div>
+                                <hr>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+                <!-- This code block generates filteres based on those dimensions for which no categories were selected -->
+                <div class="col-md-4">
+                    <button type="submit" class="submit-btn">Save selected questions</button>
+                    <br>
+                    <br>   
+                    <button onclick="location.href='/getSelectedQuestions'" class="submit-btn" type="button" >View selected questions</button>
+                    <br>
+                    <br>
+                    <div class="filter-section">
+                        <p><b>Filter results by remaining dimensions:</b></p>    
+                        <!-- Context Filter - show always as this is nothing that can be selected-->
+                        <label for="ContextFilter" style="display:block">Context:</label>
+                        <select id="ContextFilter">
+                            <option value="">All</option>
+                            <option value="Domain-agnostic">Domain-Agnostic</option>
+                            <option value="Domain-specific">Domain-Specific</option>
+                        </select>
+                        <br>
+                        <br>
+                        <!-- Use Case Filter-->
+                        {% if 'Use Case' not in filtered_dimensions %}
+                            <label for="UseCaseFilter" style="display:block">Use Case:</label>
+                            <select id="UseCaseFilter">
+                                <option value="">All</option>
+                                <option value="Transparency">Transparency</option>
+                                <option value="Performance">Performance</option>
+                                <option value="Compliance">Compliance</option>
+                                <option value="Automation">Automation</option> 
+                            </select>
+                            <br>
+                            <br>
+                        {% endif %}
+                        <!-- Perspective Filter-->
+                        {% if 'Perspective' not in filtered_dimensions %}
+                            <label for="PerspectiveFilter"style="display:block">Perspective:</label>
+                            <select id="PerspectiveFilter">
+                                <option value="">All</option>
+                                <option value="Control-Flow">Control-Flow</option>
+                                <option value="Time">Time</option>
+                                <option value="Data">Data</option>
+                                <option value="Resources">Resources</option> 
+                                <option value="Costs">Costs</option>
+                                <option value="Unspecific">Unspecific</option>
+                            </select>
+                            <br>
+                            <br>
+                        {% endif %}
+                        <!-- Primary Goal Filter-->
+                        {% if 'Primary Goal' not in filtered_dimensions %}
+                            <label for="PrimaryGoalFilter" style="display:block">Primary Goal:</label>
+                            <select id="PrimaryGoalFilter">
+                                <option value="">All</option>
+                                <option value="Describe: Quantitative">Describe: Quantitative</option>
+                                <option value="Describe: Qualitative">Describe: Qualitative</option>
+                                <option value="Explain">Explain</option>
+                                <option value="Confirm">Confirm</option>
+                                <option value="Predict: Process Execution">Predict: Process Execution</option>
+                                <option value="Predict: What-If">Predict: What-If</option>
+                                <option value="Prescribe">Prescribe</option>
+                            </select>
+                            <br>
+                            <br>
+                        {% endif %}
+                        <!-- Cognitive Step Filter-->
+                        {% if 'Cognitive Step' not in filtered_dimensions %}
+                            <label for="CognitiveStepFilter" style="display:block">Cognitive Step:</label>
+                            <select id="CognitiveStepFilter">
+                                <option value="">All</option>
+                                <option value="Identify">Identify</option>
+                                <option value="Compare">Compare</option>
+                                <option value="Summarize">Summarize</option>
+                            </select>
+                            <br>
+                            <br>
+                        {% endif %}
+                        <!-- Data Level Filter-->
+                        {% if 'Data Level' not in filtered_dimensions %}
+                            <label for="DataLevelFilter" style="display:block">Data Level:</label>
+                            <select id="DataLevelFilter">
+                                <option value="">All</option>
+                                <option value="Log">Log</option>
+                                <option value="Trace">Trace</option>
+                                <option value="Event">Event</option>
+                                <option value="Unspecific">Unspecific</option> 
+                            </select>
+                            <br>
+                            <br>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        <button type="submit" class="btn btn-success">Save selected questions</button>  
+        </form>        
+        <br>        
+        <button onclick="location.href='/question_design'" type="button" class="btn btn-success">Back to category selection</button>        
+        <button onclick="location.href='/getSelectedQuestions'" class="btn btn-success" type="button" >View selected questions</button>
+        <br> <br>
+    </div>
+
+    <script>
+        var ContextFilter = document.getElementById('ContextFilter');
+        var UseCaseFilter = document.getElementById('UseCaseFilter');
+        var PerspectiveFilter = document.getElementById('PerspectiveFilter');
+        var PrimaryGoalFilter = document.getElementById('PrimaryGoalFilter');
+        var CognitiveStepFilter = document.getElementById('CognitiveStepFilter');
+        var DataLevelFilter = document.getElementById('DataLevelFilter');
+
+        if (ContextFilter) {
+            ContextFilter.addEventListener('change', filterResults);
+        }
+        if (UseCaseFilter) {
+            UseCaseFilter.addEventListener('change', filterResults);
+        }
+        if (PerspectiveFilter) {
+            PerspectiveFilter.addEventListener('change', filterResults);
+        }
+        if (PrimaryGoalFilter) {
+            PrimaryGoalFilter.addEventListener('change', filterResults);
+        }
+        if (CognitiveStepFilter) {
+            CognitiveStepFilter.addEventListener('change', filterResults);
+        }    
+        if (DataLevelFilter) {
+            DataLevelFilter.addEventListener('change', filterResults);
+        }
+
+        function filterResults() {
+            var ContextFilterValue = ContextFilter ? ContextFilter.value : '';            
+            var UseCaseFilterValue = UseCaseFilter ? UseCaseFilter.value : '';
+            var PerspectiveFilterValue = PerspectiveFilter ? PerspectiveFilter.value : '';
+            var PrimaryGoalFilterValue = PrimaryGoalFilter ? PrimaryGoalFilter.value : '';
+            var CognitiveStepFilterValue = CognitiveStepFilter ? CognitiveStepFilter.value : '';
+            var DataLevelFilterValue = DataLevelFilter ? DataLevelFilter.value : '';
+            // Get all the rows in the results table
+            var rows = document.getElementById('data').getElementsByTagName('tr');
+
+            for (var i = 0; i < rows.length; i++) {
+                // Get the values in the filter columns for this row
+                var ContextFilterColumnValue = rows[i].getAttribute('Context');
+                var UseCaseColumnValue = rows[i].getAttribute('UseCase');
+                var PerspectiveColumnValue = rows[i].getAttribute('Perspective');
+                var PrimaryGoalColumnValue = rows[i].getAttribute('PrimaryGoal');
+                var CognitiveStepColumnValue = rows[i].getAttribute('CognitiveStep');
+                var DataLevelColumnValue = rows[i].getAttribute('DataLevel');
+
+                // If the row matches the filters, show it, otherwise hide it
+                if ((ContextFilterValue === '' || ContextFilterColumnValue === ContextFilterValue) &&
+                    (UseCaseFilterValue === '' || UseCaseColumnValue === UseCaseFilterValue) &&
+                    (PerspectiveFilterValue === '' || PerspectiveColumnValue === PerspectiveFilterValue) && 
+                    (PrimaryGoalFilterValue === '' || PrimaryGoalColumnValue === PrimaryGoalFilterValue) &&
+                    (CognitiveStepFilterValue === '' || CognitiveStepColumnValue === CognitiveStepFilterValue) &&
+                    (DataLevelFilterValue === '' || DataLevelColumnValue === DataLevelFilterValue)) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+    $(document).ready(function(){
+        $("#QuestionSelectionForm").submit(function(e){
+            e.preventDefault();
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function(){
+                    alert("Selected question have been saved!");
+                }
+            });
+        });
+    });
+    </script>
+{% endblock %}

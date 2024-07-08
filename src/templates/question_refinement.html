@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Question Refinement - Part 1{% endblock %}
+
+{% block headerStyle %}
+<style>
+    .question-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 1em 0;
+        padding: 1em;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+    .question-text {
+        flex-grow: 1;
+        margin-right: 1em;
+    }
+    input[type="text"] {
+        margin-right: 1em;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Question Refinement</h1>
+    <hr>
+    <p>Enhance your process analysis journey by refining questions before starting your analysis. This feature allows process mining analysts, process owners, and further stakeholders to engage in pre-analysis discussions to ensure clarity and a common understanding of key aspects of the analysis. By refining questions together, you can set clearer expectations and achieve more insightful analyses.</p>
+    <hr>
+    <br>
+    <form id="questionForm">
+        <label for="question">Enter your question(s). <br> In case you don't have a clearly defined question in mind, feel free to describe what you aim to analyse in simple words.</label><br>
+        <input type="text" id="question" name="question" required> <br> <br>
+        <input type="submit" value="Submit" class="btn btn-success">
+    </form>
+
+    <div id="displayArea"></div>
+
+    <hr>
+    <p>Are you done entering your preliminary questions or requirements? Click next to continue.</p>
+
+    <button id="nextButton" type="button" class="btn btn-success">Next</button>
+</div>
+
+<script>
+    document.getElementById('questionForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        var question = document.getElementById('question').value;
+        if (!question) return; // Do nothing if the question is empty
+    
+        var displayArea = document.getElementById('displayArea');
+        var questionDiv = document.createElement('div');
+        questionDiv.className = 'question-container';
+        questionDiv.innerHTML = `
+            <div class="question-text">${question}</div>
+            <button class="edit-btn">Edit</button>
+        `;
+        displayArea.appendChild(questionDiv);
+    
+        document.getElementById('question').value = ''; // Clear the input field
+    
+        // Add edit functionality
+        var editButton = questionDiv.querySelector('.edit-btn');
+        editButton.addEventListener('click', function() {
+            var input = questionDiv.querySelector('input[type="text"]');
+            var questionTextDiv = questionDiv.querySelector('.question-text');
+            if (this.textContent === 'Edit') {
+                // Create and insert input field for editing
+                input = document.createElement('input');
+                input.type = 'text';
+                input.value = questionTextDiv.textContent;
+                questionDiv.insertBefore(input, questionTextDiv);
+                questionDiv.removeChild(questionTextDiv);
+                this.textContent = 'Update';
+            } else { // Update button clicked
+                // Ensure questionTextDiv exists or recreate it
+                if (!questionTextDiv) {
+                    questionTextDiv = document.createElement('div');
+                    questionTextDiv.className = 'question-text';
+                    questionDiv.insertBefore(questionTextDiv, input);
+                }
+                questionTextDiv.textContent = input.value; // Update the question text
+                questionDiv.removeChild(input);
+                this.textContent = 'Edit';
+            }
+        });
+    });
+    
+    document.getElementById('nextButton').addEventListener('click', function() {
+        var questions = Array.from(document.querySelectorAll('.question-text')).map(function(div) {
+            return div.textContent;
+        });
+    
+        fetch('/submit_all_questions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ questions: questions })
+        }).then(response => {
+            if (response.ok) {
+                window.location.href = '/question_refinement_assessment'; // Redirect on success
+            } else {
+                console.error('Failed to submit questions');
+            }
+        });
+    });
+</script>
+{% endblock %}

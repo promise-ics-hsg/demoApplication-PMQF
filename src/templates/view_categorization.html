@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title%} Taxonomy {% endblock %}
+
+{% block headerStyle %}
+<style>
+    body {
+        font-size: 12pt;
+        font-family: Arial, sans-serif;
+    }
+    .list-group-item {
+    padding: 5px 5px;
+    }
+
+    </style>
+
+{%endblock%}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Taxonomy</h1>
+    <hr>
+    <br>
+    <button onclick="location.href='/'" type="button" class="btn btn-success">Back to tool</button>
+    <br>        
+    <br>  
+    <br>  
+    <h2>Overview of Taxonomy</h2>
+    <br>
+    <img src="{{ url_for('static', filename='taxonomy.svg') }}" alt="Taxonomy", style="width: 100%;">
+    
+    <br> <hr> <br> 
+    
+    <h2>Details</h2>
+    <br>
+    <div class="row">
+        <div class="col-sm-4" id="treeview"></div>
+        <div class="col-sm-8" id="cards"></div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            var taxonomy_data = {{ taxonomy_data | tojson | safe }};
+            
+            $('#treeview').treeview({
+                data: taxonomy_data,
+                onNodeSelected: function(event, node) {
+                    var card = `
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">${node.text}</h4>                                
+                                ${node.description ? ` <hr> <p class="card-text mb-3">${node.description}</p>` : ''}            
+                                ${node.example ? `<hr> <p class="card-text"> Example: ${node.example} </p>` : ''}
+                                ${node.usecases ? `<hr> <p class="card-text"> List of covered use cases: ${node.usecases} </p>` : ''}
+                    `;
+
+                    if (node.nodes) {
+                        node.nodes.forEach(function(child) {
+                            card += `
+                                <h5 class="card-title">${child.text}</h5>
+                                ${child.description ? ` <hr> <p class="card-text mb-3">${child.description}</p>` : ''}            
+                                ${child.example ? `<hr> <p class="card-text"> Example: ${child.example} </p>` : ''}
+                            `;
+                        });
+                    }
+                    
+                    card += `</div></div>`;
+                    $('#cards').html(card);
+                }
+            });
+        });
+
+    </script>
+
+    <br> <hr> <br> 
+        
+    <h2>Some Examples</h2>
+    <br>
+    <hr>
+    <h3>What is the average throughput time for process Variant 2?</h3>
+    <img src="{{ url_for('static', filename='taxonomy_example1.svg') }}" alt="taxonomy_example1", style="width: 100%;">
+    <br>    
+    <br>
+    <hr>
+    <h3>What are the main root causes for orders being paid late?</h3>
+    <img src="{{ url_for('static', filename='taxonomy_example2.svg') }}" alt="taxonomy_example2", style="width: 100%;">
+    <br> 
+    <br>
+    <hr>
+    <h3>Do the purchase order, the goods receipt note and the supplier's invoice match?</h3>
+    <img src="{{ url_for('static', filename='taxonomy_example3.svg') }}" alt="taxonomy_example2", style="width: 100%;">
+    <br> 
+    <br>
+    <hr>
+    <button onclick="location.href='/'" type="button" class="btn btn-success">Back to tool</button>
+    <br>
+    <br>
+</div>
+
+{% endblock %}
