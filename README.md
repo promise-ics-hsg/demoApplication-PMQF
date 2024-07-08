@@ -10,7 +10,7 @@ provides structured access to these resources, guiding users to design their own
 ## Installation
 PMQF is implemented as a Python Flask application. Follow these steps to get it up and running on your local machine:
 
-## Prerequisites
+### Prerequisites
 
 - Python 3.6 or higher
 - pip (Python package installer)
@@ -29,6 +29,32 @@ PMQF is implemented as a Python Flask application. Follow these steps to get it 
 3. Make sure to use the correct file names in app.py
 4. Feel free to update any further explanaitions or gudining questions according to your pesonal classification schema in the app or template files. 
 
+## Creating Your Classification Schema
+
+To customize PMQF for your specific needs, you'll need to create your own classification schema in a JSON file named `taxonomy.json`. This file should be placed in the `data` folder. The classification schema is crucial for categorizing questions and guiding the question design process within PMQF.
+
+### Structure of `taxonomy.json`
+```json
+[{
+  "text": "Dimension Name",
+  "description": "Definition for the Dimension",
+        "nodes": [{
+                "name": "Name of the category",
+                "text": "1) Name of the category",
+                "description": "Definition of the category",
+                "example": "Example for the question"           
+        },
+        {Category 2}
+        ...]
+},
+{
+"text": "Dimension 2"...
+}
+...
+]
+```
+
+
 ## Accessing the Deployed Application
 
 For those who prefer not to install PMQF locally, a deployed version of the application is available. You can access it by visiting the following URL: [http://130.82.168.60:5000/](http://130.82.168.60:5000/). This allows you to explore and use PMQF's features without the need for local setup.
@@ -40,5 +66,5 @@ Lisa Zimmermann - lisa.zimmermann@unisg.ch
 
 ## Acknowledgements
 - This project is funded as part of the **ProMiSE Project** by the Swiss National Science Foundation under Grant No.: 200021_197032.
-- Thank you to all friends and collegueas who tested the implementation and provided their feedback
-- Thank you to the participants from industrie, who took part in the evaluation of the tool. 
+- I would like to express my gratitude to all colleagues and frieds who participated in the trial and provided valuable feedback.
+- We would like to thank the individuals from the industry who participated in the assessment of the tool. 
