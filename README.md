@@ -58,4 +58,6 @@ Lisa Zimmermann - lisa.zimmermann@unisg.ch
 ## Acknowledgements
 - This project is funded as part of the **ProMiSE Project** by the Swiss National Science Foundation under Grant No.: 200021_197032.
 - I would like to express my gratitude to all colleagues and friends who participated in the trial and provided valuable feedback.
-- I would like to thank the individuals from the industry who participated in the assessment of the tool. 
+- I would like to thank the individuals from the industry who participated in the assessment of the tool.
+
+[![DOI](https://zenodo.org/badge/825731144.svg)](https://doi.org/10.5281/zenodo.15630118)
